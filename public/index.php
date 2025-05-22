@@ -2889,6 +2889,39 @@ case '/admin/users/add': // Add User Route (GET for form, POST for submission)
     }
 }
 
+// --- Pages statiques ---
+if ($fullPath === '/contact') {
+    $matched = true;
+    if ($method === 'GET') {
+        $layout_vars['page_title'] = 'Contact';
+        $page_content = TEMPLATE_PATH . 'contact.php';
+    } else {
+        http_response_code(405);
+        echo "Méthode non autorisée.";
+        exit;
+    }
+} elseif ($fullPath === '/faq') {
+    $matched = true;
+    if ($method === 'GET') {
+        $layout_vars['page_title'] = 'Foire Aux Questions';
+        $page_content = TEMPLATE_PATH . 'faq.php';
+    } else {
+        http_response_code(405);
+        echo "Méthode non autorisée.";
+        exit;
+    }
+} elseif ($fullPath === '/mentions-legales') {
+    $matched = true;
+    if ($method === 'GET') {
+        $layout_vars['page_title'] = 'Mentions Légales';
+        $page_content = TEMPLATE_PATH . 'mentions-legales.php';
+    } else {
+        http_response_code(405);
+        echo "Méthode non autorisée.";
+        exit;
+    }
+}
+
 // --- Vérification Finale : Si aucune route n'a été trouvée du tout ---
 if (!$matched) {
     // Ceci ne devrait techniquement pas être atteint si le cas par défaut fonctionne, mais agit comme une sauvegarde

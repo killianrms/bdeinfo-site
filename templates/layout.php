@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($layout_vars['title']) ? htmlspecialchars($layout_vars['title']) : (isset($title) ? htmlspecialchars($title) : 'APII - BDE Informatique 2025-2026'); ?></title>
-
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/events.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 <body>
 
@@ -28,7 +32,11 @@
                 <div class="navbar-links" id="navbar-links">
                     <ul>
                         <li><a href="/home">Accueil</a></li>
+                        <li><a href="/events">Événements</a></li>
+                        <li><a href="/memberships">Adhésions</a></li>
                         <li><a href="/leaderboard">Classement</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/faq">FAQ</a></li>
                         <?php if (isset($_SESSION['user_id'])): ?>
                             <li><a href="/account">Mon Compte</a></li>
                             <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
@@ -70,8 +78,41 @@
     </main>
 
     <footer>
-        <p>&copy; <?php echo date('Y'); ?> APII - BDE Informatique 2025-2026 - Tous droits réservés.</p>
-<p><a href="/mentions-legales">Mentions Légales</a></p>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="/bde.webp" alt="Logo BDE" class="footer-logo-img">
+                <h3>APII - BDE Informatique</h3>
+            </div>
+            <div class="footer-links">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="/home">Accueil</a></li>
+                    <li><a href="/events">Événements</a></li>
+                    <li><a href="/leaderboard">Classement</a></li>
+                    <li><a href="/memberships">Adhésions</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Informations</h4>
+                <ul>
+                    <li><a href="/mentions-legales">Mentions Légales</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Suivez-nous</h4>
+                <div class="social-icons">
+                    <a href="#" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-icon" title="Discord"><i class="bi bi-discord"></i></a>
+                    <a href="#" class="social-icon" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="social-icon" title="GitHub"><i class="bi bi-github"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <?php echo date('Y'); ?> APII - BDE Informatique 2025-2026 - Tous droits réservés.</p>
+        </div>
     </footer>
 
 
