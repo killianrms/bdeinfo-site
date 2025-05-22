@@ -1,0 +1,16 @@
+{
+    "name": "bde/bdeinfo-site",
+    "description": "BDE Info Website",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "BDE Info",
+            "email": "contact@bdeinfo.example.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "sumup/sumup-ecom-php-sdk": "^1.0"
+    }
+}
