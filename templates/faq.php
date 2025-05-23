@@ -79,7 +79,7 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Si vous avez une idée d'événement, vous pouvez nous la soumettre via le <a href="/contact">formulaire de contact</a> ou directement auprès d'un membre du bureau. Nous étudierons votre proposition avec attention !</p>
+                    <p>Si vous avez une idée d'événement, vous pouvez nous la soumettre par email à <a href="mailto:bdeinfomontpellier@gmail.com">bdeinfomontpellier@gmail.com</a> ou directement auprès d'un membre du bureau. Nous étudierons votre proposition avec attention !</p>
                 </div>
             </div>
         </div>
@@ -122,7 +122,7 @@
     <div class="faq-contact">
         <h2>Vous n'avez pas trouvé de réponse à votre question ?</h2>
         <p>N'hésitez pas à nous contacter directement, nous serons ravis de vous aider !</p>
-        <a href="/contact" class="btn btn-primary">Nous contacter</a>
+        <a href="mailto:bdeinfomontpellier@gmail.com" class="btn btn-primary">Nous contacter</a>
     </div>
 </div>
 

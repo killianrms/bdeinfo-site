@@ -6,7 +6,7 @@
             <h2>1. Informations générales</h2>
             <p>Le site web <strong>bdeinfo.fr</strong> est édité par l'Association APII - BDE Informatique, association loi 1901 enregistrée auprès de l'Université de Montpellier.</p>
             <p><strong>Siège social :</strong> 99 Av. d'Occitanie, 34090 Montpellier</p>
-            <p><strong>Contact :</strong> <a href="mailto:bde.info.mtp@gmail.com">bde.info.mtp@gmail.com</a></p>
+            <p><strong>Contact :</strong> <a href="mailto:bdeinfomontpellier@gmail.com">bdeinfomontpellier@gmail.com</a></p>
             <p><strong>Directeur de la publication :</strong> Le Président de l'association</p>
         </section>
         
@@ -27,7 +27,7 @@
         <section class="legal-section">
             <h2>4. Protection des données personnelles</h2>
             <p>Conformément à la loi Informatique et Libertés du 6 janvier 1978 modifiée et au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité des données vous concernant.</p>
-            <p>Pour exercer ces droits ou pour toute question sur le traitement de vos données, vous pouvez contacter notre Délégué à la Protection des Données à l'adresse email suivante : <a href="mailto:bde.info.mtp@gmail.com">bde.info.mtp@gmail.com</a>.</p>
+            <p>Pour exercer ces droits ou pour toute question sur le traitement de vos données, vous pouvez contacter notre Délégué à la Protection des Données à l'adresse email suivante : <a href="mailto:bdeinfomontpellier@gmail.com">bdeinfomontpellier@gmail.com</a>.</p>
             <p>Les informations recueillies sur ce site sont enregistrées dans un fichier informatisé par l'Association APII - BDE Informatique pour la gestion des adhésions, des événements et la communication avec les membres.</p>
             <p>Elles sont conservées pendant la durée nécessaire à la réalisation des finalités pour lesquelles elles ont été collectées et sont destinées uniquement aux membres du bureau de l'association.</p>
         </section>

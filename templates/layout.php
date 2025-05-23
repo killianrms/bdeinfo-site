@@ -105,6 +105,21 @@
                     <a href="https://github.com/killianrms/" class="social-icon" title="GitHub" target="_blank"><i class="bi bi-github"></i></a>
                 </div>
             </div>
+            <style>
+                .social-icons {
+                    display: flex;
+                    justify-content: center;
+                    gap: 20px;
+                }
+                .social-icon {
+                    font-size: 1.8rem;
+                    color: var(--text-color);
+                    transition: color 0.3s ease;
+                }
+                .social-icon:hover {
+                    color: var(--primary-color);
+                }
+            </style>
         </div>
         <div class="footer-bottom">
             <p>&copy; <?php echo date('Y'); ?> APII - BDE Informatique 2025-2026 - Tous droits réservés.</p>

@@ -6,7 +6,7 @@ Ce projet est le site web officiel du BDE (Bureau des Étudiants) Info de Montpe
 
 ## Informations de contact
 
-* **Email :** bde.info.mtp@gmail.com
+* **Email :** bdeinfomontpellier@gmail.com
 * **Instagram :** [@bde_info_mtp](https://www.instagram.com/bde_info_mtp/)
 * **GitHub :** [https://github.com/killianrms/](https://github.com/killianrms/)
 * **Adresse :** 99 Av. d'Occitanie, 34090 Montpellier
