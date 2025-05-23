@@ -1131,26 +1131,120 @@ if (!$matched) {
             break;
 
 
-        case '/events': // Nouvelle route pour la liste publique des événements (ex: pour AJAX)
+        case '/events': // Route pour la liste publique des événements
             $matched = true;
             if ($method === 'GET') {
                 try {
                     $db = Database::getInstance();
-                    $upcomingEvents = $db->getAllUpcomingEvents();
-                    header('Content-Type: application/json');
-                    echo json_encode($upcomingEvents);
-                    exit; // Sortir après l'envoi du JSON
+                    $events = $db->getAllUpcomingEvents();
+                    $layout_vars['events'] = $events;
+                    $layout_vars['page_title'] = "Agenda des Événements";
+                    $page_content = TEMPLATE_PATH . 'events.php';
                 } catch (Exception $e) {
-                    error_log("Erreur lors de la récupération des événements pour le point de terminaison /events : " . $e->getMessage());
+                    error_log("Erreur lors de la récupération des événements : " . $e->getMessage());
                     http_response_code(500);
-                    header('Content-Type: application/json');
-                    echo json_encode(['error' => 'Failed to fetch events']);
-                    exit;
+                    $page_content = TEMPLATE_PATH . '500.php';
+                    $layout_vars['error_message'] = "Une erreur est survenue lors du chargement des événements.";
                 }
             } else {
                 http_response_code(405); // Méthode Non Autorisée
-                header('Content-Type: application/json');
-                echo json_encode(['error' => 'Method Not Allowed']);
+                $page_content = TEMPLATE_PATH . '404.php';
+                $layout_vars['error_message'] = "Méthode non autorisée";
+            }
+            break;
+            
+        case '/pay': // Route pour gérer les redirections de paiement
+            $matched = true;
+            if ($method === 'GET') {
+                // Récupérer l'ID de l'événement depuis l'URL
+                $eventId = isset($_GET['event_id']) ? (int)$_GET['event_id'] : 0;
+                
+                if ($eventId <= 0) {
+                    $_SESSION['message'] = ['type' => 'danger', 'text' => "Événement non spécifié."];
+                    header('Location: /events');
+                    exit;
+                }
+                
+                // Vérifier si l'utilisateur est connecté
+                if (!isset($_SESSION['user_id'])) {
+                    $_SESSION['message'] = ['type' => 'warning', 'text' => "Veuillez vous connecter pour effectuer un paiement."];
+                    header('Location: /login?redirect=/events/' . $eventId);
+                    exit;
+                }
+                
+                try {
+                    $db = Database::getInstance();
+                    $event = $db->getEventById($eventId);
+                    
+                    if (!$event) {
+                        $_SESSION['message'] = ['type' => 'danger', 'text' => "L'événement demandé n'existe pas."];
+                        header('Location: /events');
+                        exit;
+                    }
+                    
+                    // Rediriger vers la page de paiement SumUp
+                    $userId = $_SESSION['user_id'];
+                    $user = $db->getUserById($userId);
+                    
+                    // Calculer le prix avec réduction si applicable
+                    $price = (float)$event['price'];
+                    $discountPercentage = 0;
+                    
+                    // Appliquer les réductions selon le statut de l'utilisateur
+                    if ($user['membership_status'] === 'premium') {
+                        $discountPercentage = 10;
+                    } else {
+                        $activeMemberships = $db->getUserActiveMemberships($userId);
+                        if (!empty($activeMemberships)) {
+                            $activeMembership = $activeMemberships[0];
+                            if (isset($activeMembership['discount_percentage'])) {
+                                $discountPercentage = (float)$activeMembership['discount_percentage'];
+                            }
+                        }
+                    }
+                    
+                    $finalPrice = $price;
+                    if ($discountPercentage > 0) {
+                        $finalPrice = $price * (1 - ($discountPercentage / 100));
+                    }
+                    $finalPrice = round($finalPrice, 2);
+                    
+                    // Créer un checkout SumUp
+                    $sumup = new SumUp([
+                        'app_id'     => SUMUP_CLIENT_ID,
+                        'app_secret' => SUMUP_CLIENT_SECRET,
+                        'grant_type' => 'client_credentials'
+                    ]);
+                    
+                    $checkoutService = $sumup->getCheckoutService();
+                    $checkoutReference = 'EVENT_' . $eventId . '_USER_' . $userId . '_' . time();
+                    
+                    $checkout = $checkoutService->create([
+                        'checkout_reference' => $checkoutReference,
+                        'amount' => $finalPrice,
+                        'currency' => 'EUR',
+                        'merchant_code' => SUMUP_MERCHANT_CODE,
+                        'description' => 'Inscription à ' . $event['title'],
+                        'return_url' => BASE_URL . '/payment/callback?event_id=' . $eventId . '&user_id=' . $userId
+                    ]);
+                    
+                    // Enregistrer la tentative de paiement dans la base de données
+                    $db->recordPaymentAttempt($userId, $eventId, $checkoutReference, $finalPrice, 'pending');
+                    
+                    // Rediriger vers la page de paiement SumUp
+                    header('Location: ' . $checkout->getCheckoutUrl());
+                    exit;
+                    
+                } catch (Exception $e) {
+                    error_log("Erreur lors de la création du paiement SumUp: " . $e->getMessage());
+                    $_SESSION['message'] = ['type' => 'danger', 'text' => "Une erreur est survenue lors de la préparation du paiement. Veuillez réessayer."];
+                    header('Location: /events/' . $eventId);
+                    exit;
+                }
+            } else {
+                http_response_code(405);
+                $_SESSION['message'] = ['type' => 'danger', 'text' => "Méthode non autorisée."];
+                header('Location: /events');
                 exit;
             }
             break;

@@ -170,9 +170,28 @@ if (isset($_SESSION['message']) && is_array($_SESSION['message'])) {
 if ($isUserLoggedIn) {
     if ($display_price > 0) {
 ?>
-        <form action="/events/<?= htmlspecialchars($event['id']) ?>/pay" method="POST" class="event-action-form">
-            <button type="submit" class="button">Payer avec SumUp (<?= htmlspecialchars(number_format($price_to_pay, 2, ',', ' ')) ?> €)</button>
-        </form>
+        <a href="/pay?event_id=<?= htmlspecialchars($event['id']) ?>" class="button payment-button">
+            Payer avec SumUp (<?= htmlspecialchars(number_format($price_to_pay, 2, ',', ' ')) ?> €)
+        </a>
+        <style>
+            .payment-button {
+                display: inline-block;
+                text-align: center;
+                padding: 10px 20px;
+                margin: 10px 0;
+                background-color: var(--primary-color);
+                color: white;
+                border-radius: 4px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+            .payment-button:hover {
+                background-color: var(--primary-dark);
+                text-decoration: none;
+                color: white;
+            }
+        </style>
 <?php
     } else { // Inscription à un événement gratuit
 ?>

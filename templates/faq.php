@@ -33,7 +33,7 @@
                         <li>Tarifs préférentiels sur tous nos événements</li>
                         <li>Accès prioritaire aux inscriptions</li>
                         <li>Goodies exclusifs</li>
-                        <li>Participation aux votes lors des assemblées générales</li>
+                        <li>Accès à des événements exclusifs réservés aux membres</li>
                         <li>Possibilité de rejoindre l'équipe organisatrice</li>
                     </ul>
                 </div>
@@ -69,7 +69,7 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Oui, vous pouvez annuler votre inscription jusqu'à 48 heures avant le début de l'événement. Passé ce délai, aucun remboursement ne sera possible. Pour annuler, rendez-vous sur votre profil et accédez à la section "Mes événements".</p>
+                    <p>Oui, vous pouvez annuler votre inscription à tout moment depuis votre profil dans la section "Mes événements". Veuillez noter que les remboursements ne sont pas automatiques et doivent être demandés par email à <a href="mailto:bdeinfomontpellier@gmail.com">bdeinfomontpellier@gmail.com</a>.</p>
                 </div>
             </div>
             
