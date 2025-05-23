@@ -9,7 +9,7 @@ define('SUMUP_API_KEY', getenv('SUMUP_API_KEY') ?: 'sup_sk_wLtsHG37A5Z0CdnvnnpLD
 define('SUMUP_MERCHANT_CODE', getenv('SUMUP_MERCHANT_CODE') ?: 'MCAHH3UY'); // Ajoutez votre code marchand SumUp
 // URL de base de cette application (utilisée pour les URL de redirection)
 // Assurez-vous que ceci est correctement configuré pour votre environnement (ex: https://votredomaine.com)
-define('BASE_URL', getenv('APP_BASE_URL') ?: 'http://localhost:8000');
+define('BASE_URL', getenv('APP_BASE_URL') ?: 'http://localhost:12000');
 
 // Configuration de l'API SumUp
 // NOTE : Vérifiez ces points de terminaison par rapport à la documentation officielle des développeurs SumUp (https://developer.sumup.com/api)

@@ -70,6 +70,49 @@ endif;
     <?php endif; ?>
 </div>
 
+<div class="account-events" style="margin-top: 30px; margin-bottom: 30px;">
+    <h2>Mes Événements</h2>
+    
+    <?php
+    // Récupérer les événements auxquels l'utilisateur est inscrit
+    $db = Database::getInstance();
+    $userId = $_SESSION['user_id'];
+    $userEvents = $db->getUserEvents($userId);
+    
+    if (empty($userEvents)): 
+    ?>
+        <div class="no-events-message" style="padding: 20px; background-color: #f9f9f9; border-radius: 5px; text-align: center;">
+            <p>Vous n'êtes inscrit à aucun événement pour le moment.</p>
+            <p><a href="/events" class="button">Découvrir les événements à venir</a></p>
+        </div>
+    <?php else: ?>
+        <div class="user-events-list">
+            <?php foreach ($userEvents as $event): ?>
+                <div class="event-card" style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background-color: #fff;">
+                    <h3 style="margin-top: 0; color: var(--primary-color);"><?= htmlspecialchars($event['title']) ?></h3>
+                    <p><strong>Date :</strong> <?= htmlspecialchars(formatDateFrench($event['event_date'])) ?></p>
+                    <p><strong>Lieu :</strong> <?= htmlspecialchars($event['location']) ?></p>
+                    <p><strong>Statut :</strong> 
+                        <?php if ($event['payment_status'] === 'completed'): ?>
+                            <span style="color: green;">Inscription confirmée</span>
+                        <?php elseif ($event['payment_status'] === 'pending'): ?>
+                            <span style="color: orange;">Paiement en attente</span>
+                        <?php else: ?>
+                            <span style="color: red;">Problème de paiement</span>
+                        <?php endif; ?>
+                    </p>
+                    <div style="margin-top: 10px;">
+                        <a href="/events/<?= $event['id'] ?>" class="button secondary">Voir les détails</a>
+                        <?php if (strtotime($event['event_date']) > time()): ?>
+                            <a href="/events/<?= $event['id'] ?>/cancel" class="button danger" style="background-color: #dc3545; color: white;">Annuler mon inscription</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>
+
 <div class="account-password-change" style="margin-top: 30px; margin-bottom: 30px;">
     <h2>Changer votre mot de passe</h2>
     <form action="/change-password" method="POST">
@@ -90,6 +133,22 @@ endif;
     </form>
 </div>
 
+<style>
+.button.danger {
+    background-color: #dc3545;
+    color: white;
+}
+.button.danger:hover {
+    background-color: #c82333;
+}
+.button.secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.button.secondary:hover {
+    background-color: #5a6268;
+}
+</style>
 
 <?php
 

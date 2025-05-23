@@ -113,11 +113,11 @@
                 }
                 .social-icon {
                     font-size: 1.8rem;
-                    color: var(--text-color);
+                    color: #ffffff;
                     transition: color 0.3s ease;
                 }
                 .social-icon:hover {
-                    color: var(--primary-color);
+                    color: var(--accent-color);
                 }
             </style>
         </div>

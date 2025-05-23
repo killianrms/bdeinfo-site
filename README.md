@@ -218,9 +218,13 @@ Si vous ne pouvez pas accéder au site :
 * ✅ Mise à jour des mentions légales avec les informations correctes
 * ✅ Amélioration de l'interface d'administration
 * ✅ Mise à jour des informations de contact
+* ✅ Ajout d'une section "Mes événements" dans le profil utilisateur
+* ✅ Correction de l'affichage des événements
+* ✅ Amélioration du système de paiement (simulation en mode développement)
+* ✅ Ajout de la possibilité d'annuler son inscription à un événement
 
 ### Modifications à venir
-* 🔄 Correction de l'affichage des événements
-* 🔄 Amélioration du système de paiement SumUp
-* 🔄 Vérification des participants aux événements
-* 🔄 Ajout de nouvelles fonctionnalités pour les adhérents
+* 🔄 Intégration complète avec SumUp en production
+* 🔄 Amélioration de l'interface mobile
+* 🔄 Ajout de notifications par email pour les événements
+* 🔄 Système de points de fidélité pour les adhérents

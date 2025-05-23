@@ -940,4 +940,110 @@ class Database {
 
     // Prevent unserialization (Singleton pattern) - __clone might exist elsewhere
     public function __wakeup() {}
+    
+    /**
+     * Récupère les événements auxquels un utilisateur est inscrit
+     * 
+     * @param int $userId ID de l'utilisateur
+     * @return array Liste des événements
+     */
+    public function getUserEvents($userId) {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT e.*, p.status as payment_status
+                FROM events e
+                JOIN event_registrations er ON e.id = er.event_id
+                LEFT JOIN payments p ON (p.user_id = er.user_id AND p.event_id = er.event_id)
+                WHERE er.user_id = :user_id
+                ORDER BY e.event_date DESC
+            ");
+            $stmt->execute([':user_id' => $userId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching user events: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Enregistre un utilisateur à un événement
+     * 
+     * @param int $userId ID de l'utilisateur
+     * @param int $eventId ID de l'événement
+     * @return bool Succès de l'opération
+     */
+    public function registerUserToEvent($userId, $eventId) {
+        try {
+            // Vérifier si l'utilisateur est déjà inscrit
+            $checkStmt = $this->pdo->prepare("
+                SELECT COUNT(*) FROM event_registrations 
+                WHERE user_id = :user_id AND event_id = :event_id
+            ");
+            $checkStmt->execute([
+                ':user_id' => $userId,
+                ':event_id' => $eventId
+            ]);
+            
+            if ($checkStmt->fetchColumn() > 0) {
+                // L'utilisateur est déjà inscrit
+                return true;
+            }
+            
+            // Inscrire l'utilisateur
+            $stmt = $this->pdo->prepare("
+                INSERT INTO event_registrations (user_id, event_id, registration_date)
+                VALUES (:user_id, :event_id, NOW())
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':event_id' => $eventId
+            ]);
+            
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log("Error registering user to event: " . $e->getMessage());
+            throw new Exception("Erreur lors de l'inscription à l'événement.");
+        }
+    }
+    
+    /**
+     * Annule l'inscription d'un utilisateur à un événement
+     * 
+     * @param int $userId ID de l'utilisateur
+     * @param int $eventId ID de l'événement
+     * @return bool Succès de l'opération
+     */
+    public function cancelEventRegistration($userId, $eventId) {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Supprimer l'inscription
+            $stmt = $this->pdo->prepare("
+                DELETE FROM event_registrations 
+                WHERE user_id = :user_id AND event_id = :event_id
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':event_id' => $eventId
+            ]);
+            
+            // Mettre à jour le statut du paiement si existant
+            $paymentStmt = $this->pdo->prepare("
+                UPDATE payments 
+                SET status = 'cancelled', updated_at = NOW()
+                WHERE user_id = :user_id AND event_id = :event_id
+            ");
+            $paymentStmt->execute([
+                ':user_id' => $userId,
+                ':event_id' => $eventId
+            ]);
+            
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Error cancelling event registration: " . $e->getMessage());
+            throw new Exception("Erreur lors de l'annulation de l'inscription à l'événement.");
+        }
+    }
 }

@@ -1209,30 +1209,29 @@ if (!$matched) {
                     }
                     $finalPrice = round($finalPrice, 2);
                     
-                    // Créer un checkout SumUp
-                    $sumup = new SumUp([
-                        'app_id'     => SUMUP_CLIENT_ID,
-                        'app_secret' => SUMUP_CLIENT_SECRET,
-                        'grant_type' => 'client_credentials'
-                    ]);
+                    // Simuler un paiement réussi pour le développement
+                    // Dans un environnement de production, nous utiliserions SumUp ici
                     
-                    $checkoutService = $sumup->getCheckoutService();
                     $checkoutReference = 'EVENT_' . $eventId . '_USER_' . $userId . '_' . time();
-                    
-                    $checkout = $checkoutService->create([
-                        'checkout_reference' => $checkoutReference,
-                        'amount' => $finalPrice,
-                        'currency' => 'EUR',
-                        'merchant_code' => SUMUP_MERCHANT_CODE,
-                        'description' => 'Inscription à ' . $event['title'],
-                        'return_url' => BASE_URL . '/payment/callback?event_id=' . $eventId . '&user_id=' . $userId
-                    ]);
                     
                     // Enregistrer la tentative de paiement dans la base de données
                     $db->recordPaymentAttempt($userId, $eventId, $checkoutReference, $finalPrice, 'pending');
                     
-                    // Rediriger vers la page de paiement SumUp
-                    header('Location: ' . $checkout->getCheckoutUrl());
+                    // Simuler un paiement réussi
+                    try {
+                        // Enregistrer l'utilisateur à l'événement
+                        $db->registerUserToEvent($userId, $eventId);
+                        
+                        // Mettre à jour le statut du paiement
+                        $db->updatePaymentStatus($checkoutReference, 'completed');
+                        
+                        $_SESSION['message'] = ['type' => 'success', 'text' => "Paiement simulé réussi ! Vous êtes inscrit à l'événement."];
+                        header('Location: /events/' . $eventId);
+                    } catch (Exception $e) {
+                        error_log("Erreur lors de l'inscription à l'événement: " . $e->getMessage());
+                        $_SESSION['message'] = ['type' => 'danger', 'text' => "Une erreur est survenue lors de l'inscription. Veuillez réessayer."];
+                        header('Location: /events/' . $eventId);
+                    }
                     exit;
                     
                 } catch (Exception $e) {
@@ -3009,6 +3008,47 @@ if ($fullPath === '/contact') {
         echo "Méthode non autorisée.";
         exit;
     }
+} elseif (preg_match('#^/events/(\d+)/cancel$#', $fullPath, $matches)) {
+    $matched = true;
+    $eventId = $matches[1];
+    
+    // Vérifier si l'utilisateur est connecté
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => "Vous devez être connecté pour annuler votre inscription."];
+        header('Location: /login?redirect=/events/' . $eventId);
+        exit;
+    }
+    
+    $userId = $_SESSION['user_id'];
+    $db = Database::getInstance();
+    
+    try {
+        // Vérifier si l'événement existe
+        $event = $db->getEventById($eventId);
+        if (!$event) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => "L'événement demandé n'existe pas."];
+            header('Location: /events');
+            exit;
+        }
+        
+        // Vérifier si l'événement n'est pas déjà passé
+        if (strtotime($event['event_date']) < time()) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => "Vous ne pouvez pas annuler votre inscription à un événement passé."];
+            header('Location: /events/' . $eventId);
+            exit;
+        }
+        
+        // Annuler l'inscription
+        $db->cancelEventRegistration($userId, $eventId);
+        
+        $_SESSION['message'] = ['type' => 'success', 'text' => "Votre inscription a été annulée avec succès."];
+        header('Location: /account');
+    } catch (Exception $e) {
+        error_log("Erreur lors de l'annulation de l'inscription: " . $e->getMessage());
+        $_SESSION['message'] = ['type' => 'danger', 'text' => "Une erreur est survenue lors de l'annulation de votre inscription."];
+        header('Location: /events/' . $eventId);
+    }
+    exit;
 }
 
 // --- Vérification Finale : Si aucune route n'a été trouvée du tout ---
