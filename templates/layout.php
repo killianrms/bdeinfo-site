@@ -35,7 +35,6 @@
                         <li><a href="/events">Événements</a></li>
                         <li><a href="/memberships">Adhésions</a></li>
                         <li><a href="/leaderboard">Classement</a></li>
-                        <li><a href="/contact">Contact</a></li>
                         <li><a href="/faq">FAQ</a></li>
                         <?php if (isset($_SESSION['user_id'])): ?>
                             <li><a href="/account">Mon Compte</a></li>
@@ -96,17 +95,14 @@
                 <h4>Informations</h4>
                 <ul>
                     <li><a href="/mentions-legales">Mentions Légales</a></li>
-                    <li><a href="/contact">Contact</a></li>
                     <li><a href="/faq">FAQ</a></li>
                 </ul>
             </div>
             <div class="footer-social">
                 <h4>Suivez-nous</h4>
                 <div class="social-icons">
-                    <a href="#" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="social-icon" title="Discord"><i class="bi bi-discord"></i></a>
-                    <a href="#" class="social-icon" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                    <a href="#" class="social-icon" title="GitHub"><i class="bi bi-github"></i></a>
+                    <a href="https://www.instagram.com/bde_info_mtp/" class="social-icon" title="Instagram" target="_blank"><i class="bi bi-instagram"></i></a>
+                    <a href="https://github.com/killianrms/" class="social-icon" title="GitHub" target="_blank"><i class="bi bi-github"></i></a>
                 </div>
             </div>
         </div>

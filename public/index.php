@@ -2890,16 +2890,11 @@ case '/admin/users/add': // Add User Route (GET for form, POST for submission)
 }
 
 // --- Pages statiques ---
+// La page de contact a été retirée pour rediriger les utilisateurs vers la FAQ
 if ($fullPath === '/contact') {
-    $matched = true;
-    if ($method === 'GET') {
-        $layout_vars['page_title'] = 'Contact';
-        $page_content = TEMPLATE_PATH . 'contact.php';
-    } else {
-        http_response_code(405);
-        echo "Méthode non autorisée.";
-        exit;
-    }
+    // Redirection vers la FAQ
+    header('Location: /faq');
+    exit;
 } elseif ($fullPath === '/faq') {
     $matched = true;
     if ($method === 'GET') {

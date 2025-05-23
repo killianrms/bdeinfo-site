@@ -5,27 +5,53 @@ $esc = 'htmlspecialchars';
 
 ?>
 
-<div class="admin-events-list-container"> <!-- Conteneur ajouté -->
+<div class="admin-events-list-container">
 
-<h2><?= $esc($layout_vars['page_title'] ?? 'Gestion des Événements') ?></h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><?= $esc($layout_vars['page_title'] ?? 'Gestion des Événements') ?></h2>
+    <div>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Retour au tableau de bord
+        </a>
+    </div>
+</div>
 
 <?php if (isset($layout_vars['message'])): ?>
-    <div class="alert alert-<?= $esc($layout_vars['message_type'] ?? 'info') ?> alert-dismissible fade show" role="alert"> <!-- Classes dismissible ajoutées -->
+    <div class="alert alert-<?= $esc($layout_vars['message_type'] ?? 'info') ?> alert-dismissible fade show" role="alert">
         <?= $esc($layout_vars['message']) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<div class="mb-3">
-    <a href="/admin/events/create" class="btn btn-success btn-lg">Créer un nouvel événement</a> <!-- Bouton agrandi -->
-</div>
-<div class="mb-3">
-    <a href="/admin/events/history" class="btn btn-secondary btn-lg">Voir l'historique des événements</a> <!-- Bouton ajouté pour l'historique -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h3 class="h5 mb-0">Actions</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <a href="/admin/events/create" class="btn btn-success w-100">
+                    <i class="bi bi-plus-circle me-2"></i>Créer un nouvel événement
+                </a>
+            </div>
+            <div class="col-md-6">
+                <?php if (isset($layout_vars['is_history_view']) && $layout_vars['is_history_view']): ?>
+                    <a href="/admin/events" class="btn btn-primary w-100">
+                        <i class="bi bi-list-check me-2"></i>Voir les événements actifs
+                    </a>
+                <?php else: ?>
+                    <a href="/admin/events/history" class="btn btn-secondary w-100">
+                        <i class="bi bi-clock-history me-2"></i>Voir l'historique des événements
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="table-responsive">
-    <table class="table table-striped table-hover admin-events-table"> <!-- Classe ajoutée pour style potentiel -->
-        <thead>
+    <table class="table table-striped table-hover admin-events-table">
+        <thead class="table-dark">
             <tr>
                 <th>ID</th>
                 <th>Titre</th>

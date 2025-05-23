@@ -10,19 +10,19 @@
                 <div class="contact-method">
                     <i class="bi bi-envelope-fill"></i>
                     <h3>Email</h3>
-                    <p><a href="mailto:contact@bdeinfo.fr">contact@bdeinfo.fr</a></p>
+                    <p><a href="mailto:bdeinfomontpellier@gmail.com">bdeinfomontpellier@gmail.com</a></p>
                 </div>
                 
                 <div class="contact-method">
-                    <i class="bi bi-discord"></i>
-                    <h3>Discord</h3>
-                    <p>Rejoignez notre <a href="https://discord.gg/bdeinfo" target="_blank">serveur Discord</a></p>
+                    <i class="bi bi-instagram"></i>
+                    <h3>Instagram</h3>
+                    <p>Suivez-nous sur <a href="https://www.instagram.com/bde_info_mtp/" target="_blank">Instagram</a></p>
                 </div>
                 
                 <div class="contact-method">
                     <i class="bi bi-geo-alt-fill"></i>
                     <h3>Adresse</h3>
-                    <p>Campus Universitaire<br>Bâtiment Informatique, Salle B204<br>75000 Paris</p>
+                    <p>99 Av. d'Occitanie<br>Bâtiment Informatique<br>34090 Montpellier</p>
                 </div>
             </div>
         </div>

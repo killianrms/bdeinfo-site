@@ -4,9 +4,9 @@
     <div class="legal-content">
         <section class="legal-section">
             <h2>1. Informations générales</h2>
-            <p>Le site web <strong>bdeinfo.fr</strong> est édité par l'Association APII - BDE Informatique, association loi 1901 enregistrée sous le numéro RNA W123456789.</p>
-            <p><strong>Siège social :</strong> Campus Universitaire, Bâtiment Informatique, 75000 Paris</p>
-            <p><strong>Contact :</strong> <a href="mailto:contact@bdeinfo.fr">contact@bdeinfo.fr</a></p>
+            <p>Le site web <strong>bdeinfo.fr</strong> est édité par l'Association APII - BDE Informatique, association loi 1901 enregistrée auprès de l'Université de Montpellier.</p>
+            <p><strong>Siège social :</strong> 99 Av. d'Occitanie, 34090 Montpellier</p>
+            <p><strong>Contact :</strong> <a href="mailto:bde.info.mtp@gmail.com">bde.info.mtp@gmail.com</a></p>
             <p><strong>Directeur de la publication :</strong> Le Président de l'association</p>
         </section>
         
@@ -27,7 +27,7 @@
         <section class="legal-section">
             <h2>4. Protection des données personnelles</h2>
             <p>Conformément à la loi Informatique et Libertés du 6 janvier 1978 modifiée et au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité des données vous concernant.</p>
-            <p>Pour exercer ces droits ou pour toute question sur le traitement de vos données, vous pouvez contacter notre Délégué à la Protection des Données à l'adresse email suivante : <a href="mailto:dpo@bdeinfo.fr">dpo@bdeinfo.fr</a>.</p>
+            <p>Pour exercer ces droits ou pour toute question sur le traitement de vos données, vous pouvez contacter notre Délégué à la Protection des Données à l'adresse email suivante : <a href="mailto:bde.info.mtp@gmail.com">bde.info.mtp@gmail.com</a>.</p>
             <p>Les informations recueillies sur ce site sont enregistrées dans un fichier informatisé par l'Association APII - BDE Informatique pour la gestion des adhésions, des événements et la communication avec les membres.</p>
             <p>Elles sont conservées pendant la durée nécessaire à la réalisation des finalités pour lesquelles elles ont été collectées et sont destinées uniquement aux membres du bureau de l'association.</p>
         </section>
@@ -40,8 +40,8 @@
         
         <section class="legal-section">
             <h2>6. Limitation de responsabilité</h2>
-            <p>L'Association APII - BDE Informatique s'efforce d'assurer au mieux de ses possibilités l'exactitude et la mise à jour des informations diffusées sur ce site, dont elle se réserve le droit de corriger, à tout moment et sans préavis, le contenu.</p>
-            <p>L'Association APII - BDE Informatique décline toute responsabilité :</p>
+            <p>L'Association APII - BDE Informatique de Montpellier s'efforce d'assurer au mieux de ses possibilités l'exactitude et la mise à jour des informations diffusées sur ce site, dont elle se réserve le droit de corriger, à tout moment et sans préavis, le contenu.</p>
+            <p>L'Association APII - BDE Informatique de Montpellier décline toute responsabilité :</p>
             <ul>
                 <li>pour toute interruption du site ;</li>
                 <li>pour toute survenance de bogues ;</li>
@@ -53,7 +53,7 @@
         
         <section class="legal-section">
             <h2>7. Liens hypertextes</h2>
-            <p>Ce site peut contenir des liens vers d'autres sites internet ou d'autres ressources disponibles sur Internet. L'Association APII - BDE Informatique n'a pas la possibilité de vérifier le contenu des sites ainsi visités, et n'assumera en conséquence aucune responsabilité de ce fait.</p>
+            <p>Ce site peut contenir des liens vers d'autres sites internet ou d'autres ressources disponibles sur Internet. L'Association APII - BDE Informatique de Montpellier n'a pas la possibilité de vérifier le contenu des sites ainsi visités, et n'assumera en conséquence aucune responsabilité de ce fait.</p>
         </section>
         
         <section class="legal-section">
