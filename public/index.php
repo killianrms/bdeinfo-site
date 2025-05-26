@@ -149,6 +149,13 @@ if (!$matched && $method === 'GET' && preg_match('#^/events/(\d+)$#', $routePath
         $layout_vars['event'] = $event;
         $layout_vars['discounted_price'] = $discounted_price;
         $layout_vars['discount_percentage'] = $discount_percentage;
+        
+        // Vérifier si l'utilisateur est déjà inscrit à cet événement
+        $user_registration = null;
+        if ($event && isset($_SESSION['user_id'])) {
+            $user_registration = $db->getUserRegistrationForEvent($_SESSION['user_id'], $eventId);
+        }
+        $layout_vars['user_registration'] = $user_registration;
 
         if (!$event || (isset($event['status']) && $event['status'] !== 'open')) {
              http_response_code(404); // Événement non trouvé
@@ -344,10 +351,9 @@ elseif (!$matched && $method === 'POST' && preg_match('#^/events/(\d+)/pay$#', $
         $checkoutService = $sumup->getCheckoutService();
         error_log("[DEBUG] SumUp Pay Route: Checkout service obtained. Attempting to create checkout. Event: {$eventId}, User: {$userId}, Price: {$price_to_pay}, Merchant: " . SUMUP_MERCHANT_CODE);
         $checkoutReference = 'EVENT_' . $eventId . '_USER_' . $userId . '_' . time();
-        // Définir les URL de succès et d'annulation selon les instructions
-        $successUrl = rtrim(BASE_URL, '/') . '/index.php?page=payment_success'; // Utiliser BASE_URL de la config
-        $cancelUrl = rtrim(BASE_URL, '/') . '/index.php?page=payment_cancel';   // Utiliser BASE_URL de la config
-
+        // Définir les URL de succès et d'annulation pour utiliser le callback unifié
+        $callbackUrl = rtrim(BASE_URL, '/') . '/payment/callback?ref=' . urlencode($checkoutReference);
+        
         $checkoutData = [
             'checkout_reference' => $checkoutReference,
             'amount'             => $price_to_pay,
@@ -355,8 +361,7 @@ elseif (!$matched && $method === 'POST' && preg_match('#^/events/(\d+)/pay$#', $
             'pay_to_email'       => $user['email'], // Pré-remplir l'email de l'utilisateur
             'description'        => 'Inscription: ' . htmlspecialchars($event['title']), // Utiliser htmlspecialchars
             'merchant_code'      => SUMUP_MERCHANT_CODE, // Depuis la config
-            'success_url'        => $successUrl, // Utiliser success_url
-            'cancel_url'         => $cancelUrl,  // Utiliser cancel_url
+            'return_url'         => $callbackUrl, // URL de retour unique pour succès et annulation
         ];
 
         $checkoutResponse = $checkoutService->create($checkoutData);

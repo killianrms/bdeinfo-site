@@ -168,11 +168,48 @@ if (isset($_SESSION['message']) && is_array($_SESSION['message'])) {
 <?php
 
 if ($isUserLoggedIn) {
-    if ($display_price > 0) {
+    // Vérifier si l'utilisateur est déjà inscrit
+    if (isset($user_registration) && $user_registration) {
+        $payment_status = $user_registration['payment_status'] ?? 'pending';
+        
+        if ($payment_status === 'completed') {
 ?>
-        <a href="/pay?event_id=<?= htmlspecialchars($event['id']) ?>" class="button payment-button">
-            Payer avec SumUp (<?= htmlspecialchars(number_format($price_to_pay, 2, ',', ' ')) ?> €)
-        </a>
+            <div class="alert alert-success">
+                <p><strong>✓ Vous êtes inscrit à cet événement !</strong></p>
+                <p>Votre inscription a été confirmée et votre paiement a été traité avec succès.</p>
+            </div>
+<?php
+        } elseif ($payment_status === 'pending') {
+?>
+            <div class="alert alert-warning">
+                <p><strong>⏳ Inscription en attente</strong></p>
+                <p>Votre paiement est en cours de traitement. Si cela prend trop de temps, veuillez contacter le support.</p>
+            </div>
+<?php
+        } elseif ($payment_status === 'failed' || $payment_status === 'cancelled') {
+?>
+            <div class="alert alert-danger">
+                <p><strong>❌ Paiement échoué</strong></p>
+                <p>Votre précédent paiement a échoué. Vous pouvez réessayer ci-dessous.</p>
+            </div>
+            <?php if ($display_price > 0) { ?>
+            <form action="/events/<?= htmlspecialchars($event['id']) ?>/pay" method="POST" class="event-action-form">
+                <button type="submit" class="button payment-button">
+                    Réessayer le paiement (<?= htmlspecialchars(number_format($price_to_pay, 2, ',', ' ')) ?> €)
+                </button>
+            </form>
+            <?php } ?>
+<?php
+        }
+    } else {
+        // Pas encore inscrit - afficher les boutons d'inscription
+        if ($display_price > 0) {
+?>
+        <form action="/events/<?= htmlspecialchars($event['id']) ?>/pay" method="POST" class="event-action-form">
+            <button type="submit" class="button payment-button">
+                Payer avec SumUp (<?= htmlspecialchars(number_format($price_to_pay, 2, ',', ' ')) ?> €)
+            </button>
+        </form>
         <style>
             .payment-button {
                 display: inline-block;
@@ -183,8 +220,11 @@ if ($isUserLoggedIn) {
                 color: white;
                 border-radius: 4px;
                 text-decoration: none;
+                border: none;
                 font-weight: bold;
                 transition: background-color 0.3s ease;
+                cursor: pointer;
+                width: auto;
             }
             .payment-button:hover {
                 background-color: var(--primary-dark);
@@ -193,12 +233,13 @@ if ($isUserLoggedIn) {
             }
         </style>
 <?php
-    } else { // Inscription à un événement gratuit
+        } else { // Inscription à un événement gratuit
 ?>
         <form action="/events/<?= htmlspecialchars($event['id']) ?>/register" method="POST" class="event-action-form">
             <button type="submit" class="button">S'inscrire (Gratuit)</button>
         </form>
 <?php
+        }
     }
 } else {
 ?>
