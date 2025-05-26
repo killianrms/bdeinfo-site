@@ -1,4 +1,4 @@
-# Site Web du BDE Info Montpellier
+# Site Web du BDE Informatique de Montpellier
 
 ## Description
 
