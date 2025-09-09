@@ -11,6 +11,7 @@
     "minimum-stability": "stable",
     "require": {
         "guzzlehttp/guzzle": "^7.9",
-        "sumup/sumup-ecom-php-sdk": "^1.0"
+        "sumup/sumup-ecom-php-sdk": "^1.0",
+        "ext-pdo_mysql": "*"
     }
 }

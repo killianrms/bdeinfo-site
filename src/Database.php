@@ -74,6 +74,28 @@ class Database {
 
             } else {
                 $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+                
+                // Check if database needs schema initialization for MySQL
+                if (DB_DRIVER === 'mysql') {
+                    $stmt = $this->pdo->query("SHOW TABLES");
+                    $tables = $stmt->fetchAll();
+                    
+                    if (count($tables) === 0) {
+                        try {
+                            $schemaPath = __DIR__ . '/../database/schema_mysql.sql';
+                            if (file_exists($schemaPath)) {
+                                $sql = file_get_contents($schemaPath);
+                                $this->pdo->exec($sql);
+                                error_log('Schéma MySQL de base de données créé avec succès.');
+                            } else {
+                                error_log('Fichier de schéma MySQL non trouvé : ' . $schemaPath);
+                            }
+                        } catch (\Exception $e) {
+                            error_log('Erreur lors de l\'exécution du script de schéma MySQL : ' . $e->getMessage());
+                            throw new \RuntimeException('Échec de l\'initialisation du schéma de base de données MySQL.', 0, $e);
+                        }
+                    }
+                }
             }
         } catch (\PDOException $e) {
 
@@ -339,17 +361,31 @@ class Database {
     
     public function getEventAttendanceLeaderboard(int $limit = 20): array {
         try {
-            $sql = "SELECT
-                        u.id AS user_id,
-                        u.first_name || ' ' || u.last_name AS username,
-                        SUM(e.points_awarded) AS total_points
-                    FROM event_registrations er
-                    JOIN users u ON er.user_id = u.id
-                    JOIN events e ON er.event_id = e.id
-                    WHERE er.payment_status = 'completed'
-                    GROUP BY u.id, u.first_name, u.last_name
-                    ORDER BY total_points DESC
-                    LIMIT :limit";
+            if (DB_DRIVER === 'mysql') {
+                $sql = "SELECT
+                            u.id AS user_id,
+                            CONCAT(u.first_name, ' ', u.last_name) AS username,
+                            SUM(e.points_awarded) AS total_points
+                        FROM event_registrations er
+                        JOIN users u ON er.user_id = u.id
+                        JOIN events e ON er.event_id = e.id
+                        WHERE er.payment_status = 'completed'
+                        GROUP BY u.id, u.first_name, u.last_name
+                        ORDER BY total_points DESC
+                        LIMIT :limit";
+            } else {
+                $sql = "SELECT
+                            u.id AS user_id,
+                            u.first_name || ' ' || u.last_name AS username,
+                            SUM(e.points_awarded) AS total_points
+                        FROM event_registrations er
+                        JOIN users u ON er.user_id = u.id
+                        JOIN events e ON er.event_id = e.id
+                        WHERE er.payment_status = 'completed'
+                        GROUP BY u.id, u.first_name, u.last_name
+                        ORDER BY total_points DESC
+                        LIMIT :limit";
+            }
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
