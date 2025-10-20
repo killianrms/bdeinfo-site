@@ -235,7 +235,7 @@ class Database {
         }
     }
 
-    
+
     public function getAllUpcomingEvents(): array {
         try {
             $now = date('Y-m-d H:i:s');
@@ -247,6 +247,60 @@ class Database {
             return $stmt->fetchAll();
         } catch (\PDOException $e) {
             error_log('Erreur lors de la récupération des événements à venir : ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Récupère les événements à venir avec filtres
+     * @param array $filters Filtres: search, price, date
+     * @return array
+     */
+    public function getFilteredUpcomingEvents(array $filters = []): array {
+        try {
+            $now = date('Y-m-d H:i:s');
+            $sql = "SELECT id, title, description, image_path, event_date, location, price, status FROM events WHERE event_date >= :now AND status = 'open'";
+            $params = [':now' => $now];
+
+            // Filtre par recherche
+            if (!empty($filters['search'])) {
+                $sql .= " AND (title LIKE :search OR description LIKE :search)";
+                $params[':search'] = '%' . $filters['search'] . '%';
+            }
+
+            // Filtre par prix
+            if (!empty($filters['price'])) {
+                if ($filters['price'] === 'free') {
+                    $sql .= " AND price = 0";
+                } elseif ($filters['price'] === 'paid') {
+                    $sql .= " AND price > 0";
+                }
+            }
+
+            // Filtre par date
+            if (!empty($filters['date'])) {
+                if ($filters['date'] === 'week') {
+                    $weekEnd = date('Y-m-d H:i:s', strtotime('+7 days'));
+                    $sql .= " AND event_date <= :week_end";
+                    $params[':week_end'] = $weekEnd;
+                } elseif ($filters['date'] === 'month') {
+                    $monthEnd = date('Y-m-d H:i:s', strtotime('+30 days'));
+                    $sql .= " AND event_date <= :month_end";
+                    $params[':month_end'] = $monthEnd;
+                } elseif ($filters['date'] === 'later') {
+                    $monthEnd = date('Y-m-d H:i:s', strtotime('+30 days'));
+                    $sql .= " AND event_date > :month_end";
+                    $params[':month_end'] = $monthEnd;
+                }
+            }
+
+            $sql .= " ORDER BY event_date ASC";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log('Erreur lors de la récupération des événements filtrés : ' . $e->getMessage());
             return [];
         }
     }

@@ -7,7 +7,12 @@ $registrations = $layout_vars['registrations'] ?? [];
 <h2><?= $esc($layout_vars['page_title'] ?? 'Inscriptions à l\'événement') ?></h2>
 
 <?php if ($event): ?>
-    <h3>Événement : <?= $esc($event['title']) ?></h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3>Événement : <?= $esc($event['title']) ?></h3>
+        <a href="/admin/events/<?= $event['id'] ?>/export-csv" class="btn btn-success">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Exporter en CSV
+        </a>
+    </div>
 <?php endif; ?>
 
 <?php if (isset($layout_vars['message'])): ?>

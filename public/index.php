@@ -5,6 +5,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 
 require_once __DIR__ . '/../src/Database.php';
+require_once __DIR__ . '/../src/EmailService.php';
+require_once __DIR__ . '/../src/QRCodeService.php';
 require_once __DIR__ . '/../config/sumup.php';
 
 // Utilisation des déclarations du SDK SumUp
@@ -220,6 +222,20 @@ elseif (!$matched && $method === 'POST' && preg_match('#^/events/(\d+)/register$
         $registrationSuccess = $db->addEventRegistration($eventId, $userId); // En supposant que cette méthode existe/sera créée
 
         if ($registrationSuccess) {
+            // Envoyer email de confirmation
+            $user = $db->getUserById($userId);
+            if ($user) {
+                EmailService::sendEventRegistrationConfirmation(
+                    $user['email'],
+                    $user['first_name'],
+                    $event['title'],
+                    $event['event_date'],
+                    $event['location'] ?? 'À définir',
+                    0,
+                    true
+                );
+            }
+
             // Utiliser le format demandé
             $_SESSION['message'] = ['type' => 'success', 'text' => "Merci ! Votre inscription à l'événement '" . htmlspecialchars($event['title']) . "' a été enregistrée."];
         } else {
@@ -236,6 +252,72 @@ elseif (!$matched && $method === 'POST' && preg_match('#^/events/(\d+)/register$
     // 6. Rediriger vers la page de détails de l'événement
     header('Location: /events/' . $eventId);
     exit;
+}
+
+// GET /tickets/{registrationId} - Afficher le ticket
+elseif (!$matched && $method === 'GET' && preg_match('#^/tickets/(\d+)$#', $routePath, $matches)) {
+    $matched = true;
+    $registrationId = (int)$matches[1];
+
+    // Vérifier que l'utilisateur est connecté
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['message'] = ['type' => 'warning', 'text' => "Veuillez vous connecter pour voir votre ticket."];
+        header('Location: /login');
+        exit;
+    }
+
+    $userId = $_SESSION['user_id'];
+
+    try {
+        $db = Database::getInstance();
+
+        // Récupérer l'inscription avec les détails de l'événement
+        $registration = $db->getConnection()->prepare("
+            SELECT er.*, e.*, u.first_name, u.last_name, u.email
+            FROM event_registrations er
+            JOIN events e ON er.event_id = e.id
+            JOIN users u ON er.user_id = u.id
+            WHERE er.id = :reg_id AND er.user_id = :user_id
+        ");
+        $registration->execute([':reg_id' => $registrationId, ':user_id' => $userId]);
+        $data = $registration->fetch();
+
+        if (!$data) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => "Ticket introuvable ou accès non autorisé."];
+            header('Location: /account');
+            exit;
+        }
+
+        // Vérifier que le paiement est confirmé
+        if ($data['payment_status'] !== 'completed' && $data['price'] > 0) {
+            $_SESSION['message'] = ['type' => 'warning', 'text' => "Le paiement de cet événement n'est pas encore confirmé."];
+            header('Location: /account');
+            exit;
+        }
+
+        // Générer le ticket
+        $event = [
+            'id' => $data['event_id'],
+            'title' => $data['title'],
+            'event_date' => $data['event_date'],
+            'location' => $data['location']
+        ];
+        $user = [
+            'id' => $userId,
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name']
+        ];
+
+        $ticketHTML = QRCodeService::generateTicketHTML($event, $user, $registrationId);
+        echo $ticketHTML;
+        exit;
+
+    } catch (Exception $e) {
+        error_log("Erreur lors de la génération du ticket: " . $e->getMessage());
+        $_SESSION['message'] = ['type' => 'danger', 'text' => "Une erreur est survenue lors de la génération du ticket."];
+        header('Location: /account');
+        exit;
+    }
 }
 
 // POST /events/{id}/pay - Gérer l'Inscription Payante à un Événement via SumUp
@@ -456,6 +538,77 @@ elseif (!$matched && $method === 'GET' && $routePath === '/admin/events/registra
         $_SESSION['message'] = "Une erreur est survenue lors du chargement des inscriptions.";
         $_SESSION['message_type'] = 'error';
         header('Location: /admin/events'); // Rediriger vers la liste des événements en cas d'erreur
+        exit;
+    }
+}
+
+
+// GET /admin/events/{id}/export-csv - Export CSV des participants
+elseif (!$matched && $method === 'GET' && preg_match('#^/admin/events/(\d+)/export-csv$#', $routePath, $matches)) {
+    $matched = true;
+    $eventId = (int)$matches[1];
+    // Vérification admin déjà effectuée en haut
+
+    try {
+        $db = Database::getInstance();
+        $event = $db->getEventById($eventId);
+
+        if (!$event) {
+            $_SESSION['message'] = "Événement non trouvé.";
+            $_SESSION['message_type'] = 'error';
+            header('Location: /admin/events');
+            exit;
+        }
+
+        $registrations = $db->getRegistrationsForEvent($eventId);
+
+        // Générer le nom du fichier
+        $filename = 'inscriptions_' . preg_replace('/[^a-z0-9]+/', '_', strtolower($event['title'])) . '_' . date('Y-m-d') . '.csv';
+
+        // Headers pour le téléchargement
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // Ouvrir le flux de sortie
+        $output = fopen('php://output', 'w');
+
+        // Ajouter le BOM UTF-8 pour Excel
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+
+        // En-têtes du CSV
+        fputcsv($output, [
+            'ID',
+            'Prénom',
+            'Nom',
+            'Email',
+            'Date d\'inscription',
+            'Statut paiement',
+            'ID Transaction'
+        ], ';');
+
+        // Données
+        foreach ($registrations as $reg) {
+            fputcsv($output, [
+                $reg['registration_id'],
+                $reg['first_name'],
+                $reg['last_name'],
+                $reg['email'],
+                date('d/m/Y H:i', strtotime($reg['registration_date'])),
+                ucfirst($reg['payment_status']),
+                $reg['transaction_id'] ?? 'N/A'
+            ], ';');
+        }
+
+        fclose($output);
+        exit;
+
+    } catch (Exception $e) {
+        error_log("Erreur lors de l'export CSV pour l'événement ID {$eventId}: " . $e->getMessage());
+        $_SESSION['message'] = "Une erreur est survenue lors de l'export.";
+        $_SESSION['message_type'] = 'error';
+        header('Location: /admin/events');
         exit;
     }
 }
@@ -1141,7 +1294,20 @@ if (!$matched) {
             if ($method === 'GET') {
                 try {
                     $db = Database::getInstance();
-                    $events = $db->getAllUpcomingEvents();
+
+                    // Récupérer les filtres
+                    $filters = [
+                        'search' => $_GET['search'] ?? '',
+                        'price' => $_GET['price'] ?? '',
+                        'date' => $_GET['date'] ?? ''
+                    ];
+
+                    // Utiliser la méthode filtrée si des filtres sont présents
+                    $hasFilters = !empty($filters['search']) || !empty($filters['price']) || !empty($filters['date']);
+                    $events = $hasFilters
+                        ? $db->getFilteredUpcomingEvents($filters)
+                        : $db->getAllUpcomingEvents();
+
                     $layout_vars['events'] = $events;
                     $layout_vars['page_title'] = "Agenda des Événements";
                     $page_content = TEMPLATE_PATH . 'events.php';
@@ -3047,10 +3213,20 @@ if (!$matched && preg_match('#^/events/(\d+)/cancel$#', $routePath, $matches)) {
             header('Location: /events/' . $eventId);
             exit;
         }
-        
+
         // Annuler l'inscription
         $db->cancelEventRegistration($userId, $eventId);
-        
+
+        // Envoyer email de confirmation d'annulation
+        $user = $db->getUserById($userId);
+        if ($user) {
+            EmailService::sendCancellationConfirmation(
+                $user['email'],
+                $user['first_name'],
+                $event['title']
+            );
+        }
+
         $_SESSION['message'] = ['type' => 'success', 'text' => "Votre inscription a été annulée avec succès."];
         header('Location: /account');
     } catch (Exception $e) {

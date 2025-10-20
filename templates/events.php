@@ -5,9 +5,56 @@ $events = isset($events) ? $events : [];
 
 <div class="container">
     <h1 class="page-title">Agenda des Événements</h1>
-    
+
     <div class="events-header">
         <p>Découvrez tous nos événements à venir et inscrivez-vous dès maintenant !</p>
+    </div>
+
+    <!-- Barre de recherche et filtres -->
+    <div class="search-filters" style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <form method="GET" action="/events" id="filter-form">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
+                <!-- Recherche -->
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">🔍 Rechercher</label>
+                    <input type="text" name="search"
+                           placeholder="Nom de l'événement..."
+                           value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+
+                <!-- Filtre Prix -->
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">💰 Prix</label>
+                    <select name="price" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="">Tous</option>
+                        <option value="free" <?= ($_GET['price'] ?? '') === 'free' ? 'selected' : '' ?>>Gratuit</option>
+                        <option value="paid" <?= ($_GET['price'] ?? '') === 'paid' ? 'selected' : '' ?>>Payant</option>
+                    </select>
+                </div>
+
+                <!-- Filtre Date -->
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">📅 Période</label>
+                    <select name="date" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="">Toutes</option>
+                        <option value="week" <?= ($_GET['date'] ?? '') === 'week' ? 'selected' : '' ?>>Cette semaine</option>
+                        <option value="month" <?= ($_GET['date'] ?? '') === 'month' ? 'selected' : '' ?>>Ce mois</option>
+                        <option value="later" <?= ($_GET['date'] ?? '') === 'later' ? 'selected' : '' ?>>Plus tard</option>
+                    </select>
+                </div>
+
+                <!-- Boutons -->
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Filtrer
+                    </button>
+                    <a href="/events" style="padding: 10px 20px; background: #f0f0f0; color: #333; border: none; border-radius: 5px; text-decoration: none; display: inline-block;">
+                        Réinitialiser
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
 
     <?php if (empty($events)): ?>
