@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: bdeinfo-web
+    ports:
+      - "80:80"
+    volumes:
+      - ./public/uploads:/var/www/html/public/uploads
+    environment:
+      - DB_HOST=db
+      - DB_NAME=bdeinfo_site
+      - DB_USER=bdeinfo
+      - DB_PASS=bdeinfo123
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: bdeinfo-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: bdeinfo_site
+      MYSQL_USER: bdeinfo
+      MYSQL_PASSWORD: bdeinfo123
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema_mysql.sql:/docker-entrypoint-initdb.d/schema.sql
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

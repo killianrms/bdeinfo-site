@@ -2974,6 +2974,36 @@ case '/admin/users/add': // Add User Route (GET for form, POST for submission)
         break;
 
 
+    // --- Pages statiques ---
+    case '/contact':
+        // Redirection vers la FAQ
+        header('Location: /faq');
+        exit;
+
+    case '/faq':
+        $matched = true;
+        if ($method === 'GET') {
+            $layout_vars['page_title'] = 'Foire Aux Questions';
+            $page_content = TEMPLATE_PATH . 'faq.php';
+        } else {
+            http_response_code(405);
+            echo "Méthode non autorisée.";
+            exit;
+        }
+        break;
+
+    case '/mentions-legales':
+        $matched = true;
+        if ($method === 'GET') {
+            $layout_vars['page_title'] = 'Mentions Légales';
+            $page_content = TEMPLATE_PATH . 'mentions-legales.php';
+        } else {
+            http_response_code(405);
+            echo "Méthode non autorisée.";
+            exit;
+        }
+        break;
+
     // --- Logique de Détail et de Suppression d'Événement Déplacée vers des Cas Spécifiques ---
 
         // --- Par Défaut : 404 Non Trouvé ---
@@ -2987,33 +3017,8 @@ case '/admin/users/add': // Add User Route (GET for form, POST for submission)
     }
 }
 
-// --- Pages statiques ---
-// La page de contact a été retirée pour rediriger les utilisateurs vers la FAQ
-if ($fullPath === '/contact') {
-    // Redirection vers la FAQ
-    header('Location: /faq');
-    exit;
-} elseif ($fullPath === '/faq') {
-    $matched = true;
-    if ($method === 'GET') {
-        $layout_vars['page_title'] = 'Foire Aux Questions';
-        $page_content = TEMPLATE_PATH . 'faq.php';
-    } else {
-        http_response_code(405);
-        echo "Méthode non autorisée.";
-        exit;
-    }
-} elseif ($fullPath === '/mentions-legales') {
-    $matched = true;
-    if ($method === 'GET') {
-        $layout_vars['page_title'] = 'Mentions Légales';
-        $page_content = TEMPLATE_PATH . 'mentions-legales.php';
-    } else {
-        http_response_code(405);
-        echo "Méthode non autorisée.";
-        exit;
-    }
-} elseif (preg_match('#^/events/(\d+)/cancel$#', $fullPath, $matches)) {
+// --- Event cancellation route ---
+if (!$matched && preg_match('#^/events/(\d+)/cancel$#', $routePath, $matches)) {
     $matched = true;
     $eventId = $matches[1];
     

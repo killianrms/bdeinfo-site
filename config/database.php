@@ -1,11 +1,11 @@
 <?php
 
 define('DB_DRIVER', 'mysql');
-define('DB_HOST', 'localhost');
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_PORT', '3306');
-define('DB_NAME', 'bdeinfo_site');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', getenv('DB_NAME') ?: 'bdeinfo_site');
+define('DB_USER', getenv('DB_USER') ?: 'bdeinfo');
+define('DB_PASS', getenv('DB_PASS') ?: 'bdeinfo123');
 define('DB_CHARSET', 'utf8mb4');
 
 
