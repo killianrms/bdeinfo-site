@@ -1,0 +1,41 @@
+# Fichiers d'environnement (contiennent des secrets)
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Dépendances
+/vendor/
+node_modules/
+
+# Fichiers temporaires
+tmp/
+temp/
+*.tmp
+
+# Fichiers de cache
+cache/
+*.cache
+
+# Fichiers uploadés (si applicable)
+uploads/
+public/uploads/
+
+# Backups de base de données
+*.sql
+*.sqlite
+*.db
+database/backups/
